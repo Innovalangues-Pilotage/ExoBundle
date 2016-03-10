@@ -1,0 +1,40 @@
+<link href="{{ asset('bundles/ujmexo/css/tableLayout.css') }}" type="text/css" rel="stylesheet"/>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ 'audiomark_creation' | trans({}, 'ujm_exo') }}</h3>
+    </div>
+
+    <form action="{{ path('ujm_interactionaudiomark_create') }}" method="post" {{ form_enctype(form) }}>
+        <div class="panel-body">
+            {% include "UJMExoBundle:Partial:question.html.twig" %}
+            {% include "UJMExoBundle:Partial:interactions/audiomark.html.twig" %}
+            {% include "UJMExoBundle:Partial:model.html.twig" %}
+            {% include "UJMExoBundle:Partial:cloneInterCreation.html.twig" %}
+            {% include "UJMExoBundle:Partial:restform.html.twig" %}
+        </div>
+        <div class="panel-footer">
+            <input type="hidden" name="exercise" value="{{ exoID }}" />
+            <button type="submit" id="button_submit" class="btn btn-primary" onclick="setOrder();">{{ 'create' | trans({}, 'ujm_exo') }}</button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="{{ asset('bundles/frontend/jquery-ui/jquery-ui.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/ext/jquery-ui-touch-punch.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/interactionAudioMark.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/category_pop.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/hint.js') }}"></script>
+
+{# functions javascript #}
+{% if error is defined %}
+    <script type="text/javascript">
+        creationAudioMarkEdit('{{ 'expected_answer' | trans({}, 'ujm_exo') }}', '{{ 'response' | trans({}, 'ujm_exo') }}', '{{ 'points' | trans({}, 'ujm_exo') }}', '{{ 'comment' | trans({}, 'ujm_exo') }}', '{{ 'position_force' | trans({}, 'ujm_exo') }}', '{{ 'add_choice' | trans({}, 'ujm_exo') }}', '{{ 'delete' | trans({}, 'ujm_exo') }}', '{{ typeQCM|raw }}','{{ 'advanced_edition' | trans({}, 'ujm_exo') }}', 0);
+        newHintEdit('{{ 'hint' | trans({}, 'ujm_exo') }}', '{{ 'penalty' | trans({}, 'ujm_exo') }}', '{{ 'hint' | trans({}, 'ujm_exo') }}', '{{ 'delete' | trans({}, 'ujm_exo') }}');
+    </script>
+{% else %}
+    <script type="text/javascript">
+        creationAudioMark('{{ 'expected_answer' | trans({}, 'ujm_exo') }}', '{{ 'response' | trans({}, 'ujm_exo') }}', '{{ 'points' | trans({}, 'ujm_exo') }}', '{{ 'comment' | trans({}, 'ujm_exo') }}', '{{ 'position_force' | trans({}, 'ujm_exo') }}', '{{ 'add_choice' | trans({}, 'ujm_exo') }}', '{{ 'delete' | trans({}, 'ujm_exo') }}','{{ 'advanced_edition' | trans({}, 'ujm_exo') }}' ,'{{ typeAudioMark|raw }}');
+        newHint('{{ 'hint' | trans({}, 'ujm_exo') }}', '{{ 'penalty' | trans({}, 'ujm_exo') }}', '{{ 'hint' | trans({}, 'ujm_exo') }}', '{{ 'delete' | trans({}, 'ujm_exo') }}');
+    </script>
+{% endif %}

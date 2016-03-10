@@ -4,3 +4,4 @@ type:
     - InteractionGraphic
     - InteractionOpen
     - InteractionMatching
+    - InteractionAudioMark

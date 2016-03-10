@@ -7,6 +7,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use UJM\ExoBundle\Entity\TypeMatching;
 use UJM\ExoBundle\Entity\TypeOpenQuestion;
 use UJM\ExoBundle\Entity\TypeQCM;
+use UJM\ExoBundle\Entity\TypeAudioMark;
 
 class LoadOptionsData extends AbstractFixture
 {
@@ -43,6 +44,13 @@ class LoadOptionsData extends AbstractFixture
             $this->newTMatching($val, $code);
         }
 
+        $valTaudioMark = array();
+        $valTaudioMark[1] = 'Audio mark';
+
+        foreach ($valTaudioMark as $code => $val) {
+            $this->newTaudioMark($val, $code);
+        }
+
         $this->manager->flush();
     }
 
@@ -71,5 +79,14 @@ class LoadOptionsData extends AbstractFixture
         $tmatch->setCode($code);
 
         $this->manager->persist($tmatch);
+    }
+
+    private function newTaudioMark($val, $code)
+    {
+        $taudioMark = new TypeAudioMark();
+        $taudioMark->setValue($val);
+        $taudioMark->setCode($code);
+
+        $this->manager->persist($taudioMark);
     }
 }

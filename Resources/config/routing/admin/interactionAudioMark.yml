@@ -1,0 +1,19 @@
+ujm_interactionaudiomark_create:
+    pattern:  /create
+    defaults: { _controller: "UJMExoBundle:InteractionAudioMark:create" }
+    requirements: { _method: post }
+
+ujm_interactionaudiomark_edit:
+    pattern: /edit/{interaction}/{exoID}/{catID}/{user}
+    defaults: { _controller: "UJMExoBundle:InteractionAudioMark:edit" }
+    requirements: { _method: post }
+
+ujm_interactionaudiomark_response:
+    pattern: /testMatching
+    defaults: { _controller: "UJMExoBundle:InteractionAudioMark:responseMatching" }
+    requirements: { _method: post }
+
+ujm_interactionaudiomark_update:
+    pattern:  /{id}/update
+    defaults: { _controller: "UJMExoBundle:InteractionAudioMark:update" }
+    requirements: { _method: post }

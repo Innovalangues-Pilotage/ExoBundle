@@ -66,6 +66,10 @@ services:
         class: UJM\ExoBundle\Services\classes\Interactions\Qcm
         arguments: [@doctrine]
 
+    ujm.exo_InteractionAudioMark:
+        class: UJM\ExoBundle\Services\classes\Interactions\AudioMark
+        arguments: [@doctrine]
+
     ujm.exo_paper:
         class: UJM\ExoBundle\Services\classes\PaperService
         arguments: [@doctrine, @service_container]
