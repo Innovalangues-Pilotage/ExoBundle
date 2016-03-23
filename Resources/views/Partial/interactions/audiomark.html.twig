@@ -3,9 +3,33 @@
     {{ form_errors(form.audioResource) }}
 </div>
 
-<div class="col-md-12">
-	<audio id="audio-resource" width="100%" controls="controls" preload='none'> 
-		<source id="audio-resource-source" name="audio" src="d">
-		</source>
-	</audio>
+<div class="row">
+    <div class="col-md-12">
+        <div id="wave-timeline"></div>
+        <div id="waveform">
+            <div class="progress progress-striped active" id="progress-bar">
+                <div class="progress-bar progress-bar-info"></div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div class="btn-group">
+            <span class="btn btn-default" onclick="playPause()">
+                <i class="fa fa-play"></i><i class="fa fa-pause"></i>
+            </span>
+            <button id="submit-button" class="btn btn-default" onclick="submitAnswer()"><i class="fa fa-ok"></i></button>
+            <span  class="btn btn-default" onclick="removeRegions(true)"><i class="fa fa-trash"></i></span>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/wavesurfer.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/webaudio.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/drawer.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/drawer.canvas.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.timeline.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.regions.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.minimap.js') }}"></script>

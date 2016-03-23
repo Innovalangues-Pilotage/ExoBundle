@@ -36,7 +36,7 @@ class InteractionAudioMarkType extends AbstractType
                 array(
                     'required' => false,
                     'attr' => array(
-                        'data-blacklist' => 'activity,directory',
+                        'data-blacklist' => 'file',
                     ),
                 ));
     }
