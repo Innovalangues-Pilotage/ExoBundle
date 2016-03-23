@@ -30,6 +30,15 @@ class InteractionAudioMarkType extends AbstractType
                     'choice_translation_domain' => true,
                 )
             );
+        $builder->add(
+                'audioResource',
+                'resourcePicker',
+                array(
+                    'required' => false,
+                    'attr' => array(
+                        'data-blacklist' => 'activity,directory',
+                    ),
+                ));
     }
 
     public function configureOptions(OptionsResolver $resolver)

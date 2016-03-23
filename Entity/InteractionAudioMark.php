@@ -20,11 +20,41 @@ class InteractionAudioMark extends AbstractInteraction
     private $typeAudioMark;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Claroline\CoreBundle\Entity\Resource\ResourceNode")
+     * @ORM\JoinColumn(onDelete="SET NULL", nullable=true)
+     */
+    protected $audioResource;
+
+    /**
      * Constructs a new instance of choices.
      */
     public function __construct()
     {
         $this->choices = new ArrayCollection();
+    }
+
+    /**
+     * Get resource node.
+     *
+     * @return string
+     */
+    public function getAudioResource()
+    {
+        return $this->audioResource;
+    }
+
+    /**
+     * Set resource node.
+     *
+     * @param ResourceNode $primaryResource
+     *
+     * @return activity
+     */
+    public function setAudioResource($audioResource = null)
+    {
+        $this->audioResource = $audioResource;
+
+        return $this;
     }
 
     /**

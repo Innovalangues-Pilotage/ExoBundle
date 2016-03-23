@@ -1,1 +1,11 @@
-!audiomark.html.twig!
+<div class="control-label col-md-12">
+    {{ form_widget(form.audioResource) }}
+    {{ form_errors(form.audioResource) }}
+</div>
+
+<div class="col-md-12">
+	<audio id="audio-resource" width="100%" controls="controls" preload='none'> 
+		<source id="audio-resource-source" name="audio" src="d">
+		</source>
+	</audio>
+</div>
