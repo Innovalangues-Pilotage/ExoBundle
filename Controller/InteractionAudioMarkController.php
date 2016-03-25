@@ -56,6 +56,7 @@ class InteractionAudioMarkController extends Controller
         return $this->container->get('templating')->renderResponse(
            'UJMExoBundle:InteractionAudioMark:new.html.twig', array(
            'exoID' => $attr->get('exoID'),
+           'stepID' => $attr->get('stepID'),
            'entity' => $entity,
            'typeAudioMark' => json_encode($typeAudioMark),
            'form' => $form->createView(),
@@ -71,71 +72,68 @@ class InteractionAudioMarkController extends Controller
      */
     public function createAction()
     {
-        $audioMarkService = $this->container->get('ujm.exo_InteractionOpen');
-        $interOpen = new InteractionAudioMark();
-        $form = $this->createForm(
-            new InteractionAudioMarkType(
-                $this->container->get('security.token_storage')->getToken()->getUser()
-            ), $interOpen
-        );
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $em = $this->getDoctrine()->getManager();
+        $services = $this->container->get('ujm.exo_InteractionQCM');
+        $interQCM = new InteractionAudioMark();
+        $form = $this->createForm(new InteractionAudioMarkType($user), $interQCM);
+        $request = $this->container->get('request');
 
-        $exoID = $this->container->get('request')->request->get('exercise');
-        //Get the lock category
+        $exoID = $request->request->get('exercise');
+        $stepID = $request->request->get('step');
+
         $catSer = $this->container->get('ujm.exo_category');
+        $exercise = $em->getRepository('UJMExoBundle:Exercise')->find($exoID);
 
-        $exercise = $this->getDoctrine()->getManager()->getRepository('UJMExoBundle:Exercise')->find($exoID);
+        $step = $em->getRepository('UJMExoBundle:Step')->find($stepID);
         $formHandler = new InteractionAudioMarkHandler(
-            $form, $this->get('request'), $this->getDoctrine()->getManager(),
+            $form, $this->get('request'), $em,
             $this->container->get('ujm.exo_exercise'), $catSer,
-            $this->container->get('security.token_storage')->getToken()->getUser(), $exercise,
+            $user, $exercise, $step,
             $this->get('translator')
         );
-        $openHandler = $formHandler->processAdd();
-        if ($openHandler === true) {
-            $categoryToFind = $interOpen->getQuestion()->getCategory();
-            $titleToFind = $interOpen->getQuestion()->getTitle();
 
-            if ($exoID == -1) {
-                return $this->redirect(
-                    $this->generateUrl('ujm_question_index', array(
-                        'categoryToFind' => base64_encode($categoryToFind), 'titleToFind' => base64_encode($titleToFind), )
-                    )
-                );
-            } else {
-                return $this->redirect(
-                    $this->generateUrl('ujm_exercise_questions', array(
-                        'id' => $exoID, 'categoryToFind' => $categoryToFind, 'titleToFind' => $titleToFind, )
-                    )
-                );
-            }
+        $qcmHandler = $formHandler->processAdd();
+
+        if ($qcmHandler === true) {
+            $cat = $interQCM->getQuestion()->getCategory();
+            $title = $interQCM->getQuestion()->getTitle();
+
+            $url = ($exoID == -1)
+                ? $this->generateUrl('ujm_question_index', array('categoryToFind' => base64_encode($cat), 'titleToFind' => base64_encode($title)))
+                : $this->generateUrl('ujm_exercise_open', ['id' => $exoID]).'#/steps';
+
+            return $this->redirect($url);
         }
 
-        if ($openHandler == 'infoDuplicateQuestion') {
+        if ($qcmHandler == 'infoDuplicateQuestion') {
             $form->addError(new FormError(
                     $this->get('translator')->trans('info_duplicate_question', array(), 'ujm_exo')
                     ));
         }
 
-        $typeOpen = $audioMarkService->getTypeOpen();
+        $typeQCM = $services->getTypeQCM();
         $formWithError = $this->render(
-            'UJMExoBundle:InteractionOpen:new.html.twig', array(
-            'entity' => $interOpen,
-            'form' => $form->createView(),
-            'exoID' => $exoID,
-            'error' => true,
-            'typeOpen' => json_encode($typeOpen),
+            'UJMExoBundle:InteractionQCM:new.html.twig', array(
+                'entity' => $interQCM,
+                'form' => $form->createView(),
+                'error' => true,
+                'exoID' => $exoID,
+                'stepID' => $stepID,
+                'typeQCM' => json_encode($typeQCM),
             )
         );
         $interactionType = $this->container->get('ujm.exo_question')->getTypes();
         $formWithError = substr($formWithError, strrpos($formWithError, 'GMT') + 3);
 
         return $this->render(
-            'UJMExoBundle:Question:new.html.twig', array(
-            'formWithError' => $formWithError,
-            'exoID' => $exoID,
-            'linkedCategory' => $catSer->getLinkedCategories(),
-            'locker' => $catSer->getLockCategory(),
-            'interactionType' => $interactionType,
+                'UJMExoBundle:Question:new.html.twig', array(
+                'formWithError' => $formWithError,
+                'exoID' => $exoID,
+                'stepID' => $stepID,
+                'linkedCategory' => $catSer->getLinkedCategories(),
+                'locker' => $catSer->getLockCategory(),
+                'interactionType' => $interactionType,
             )
         );
     }
@@ -149,6 +147,8 @@ class InteractionAudioMarkController extends Controller
         $interaction = $attr->get('interaction');
         $user = $attr->get('user');
         $exoId = $attr->get('exoID');
+        $catId = $attr->get('catID');
+
         $audioMarkService = $this->container->get('ujm.exo_InteractionOpen');
         $catService = $this->container->get('ujm.exo_category');
         $em = $this->get('doctrine')->getEntityManager();
@@ -157,7 +157,7 @@ class InteractionAudioMarkController extends Controller
         $catService->ctrlCategory($audioMark->getQuestion());
 
         $editForm = $this->createForm(
-            new InteractionAudioMarkType($user, $exoId), $audioMark
+            new InteractionAudioMarkType($user, $catId), $audioMark
         );
 
         if ($exoId != -1) {
@@ -222,7 +222,7 @@ class InteractionAudioMarkController extends Controller
         if ($formHandler->processUpdate($audioMark)) {
             $url = $exoID == -1
                 ? $this->generateUrl('ujm_question_index')
-                : $this->generateUrl('ujm_exercise_questions', array('id' => $exoID));
+                : $this->generateUrl('ujm_exercise_open', ['id' => $exoID]).'#/steps';
 
             return $this->redirect($url);
         }

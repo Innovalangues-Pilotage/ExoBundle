@@ -24,9 +24,9 @@ class ExerciseManager
      *     "manager"    = @DI\Inject("ujm.exo.question_manager")
      * })
      *
-     * @param ObjectManager     $om
-     * @param Validator         $validator
-     * @param QuestionManager   $manager
+     * @param ObjectManager   $om
+     * @param Validator       $validator
+     * @param QuestionManager $manager
      */
     public function __construct(ObjectManager $om, Validator $validator, QuestionManager $manager)
     {
@@ -121,6 +121,7 @@ class ExerciseManager
      * and/or randomized if needed.
      *
      * @param Exercise $exercise
+     *
      * @return array
      */
     public function pickQuestions(Exercise $exercise)
@@ -148,7 +149,7 @@ class ExerciseManager
                 $index = rand(0, count($finalQuestions) - 1);
                 unset($finalQuestions[$index]);
                 $finalQuestions = array_values($finalQuestions); // "re-index" the array
-                $questionToPick--;
+                --$questionToPick;
             }
         }
 
@@ -156,9 +157,10 @@ class ExerciseManager
     }
 
     /**
-     * Returns the step list of an exercise
+     * Returns the step list of an exercise.
      *
      * @param Exercise $exercise
+     *
      * @return array
      */
     public function pickSteps(Exercise $exercise)
@@ -176,6 +178,7 @@ class ExerciseManager
      * Imports an exercise in a JSON format.
      *
      * @param string $data
+     *
      * @throws ValidationException if the exercise is not valid
      */
     public function importExercise($data)
@@ -192,8 +195,9 @@ class ExerciseManager
     /**
      * Exports an exercise in a JSON-encodable format.
      *
-     * @param Exercise  $exercise
-     * @param bool      $withSolutions
+     * @param Exercise $exercise
+     * @param bool     $withSolutions
+     *
      * @return array
      */
     public function exportExercise(Exercise $exercise, $withSolutions = true)
@@ -208,21 +212,24 @@ class ExerciseManager
     /**
      * Exports an exercise in a JSON-encodable format.
      *
-     * @param Exercise  $exercise
+     * @param Exercise $exercise
+     *
      * @return array
      */
     public function exportExerciseMinimal(Exercise $exercise)
     {
         return [
             'id' => $exercise->getId(),
-            'meta' => $this->exportMetadata($exercise)
+            'meta' => $this->exportMetadata($exercise),
         ];
     }
 
     /**
-     * Update the Exercise metadata
-     * @param Exercise $exercise
+     * Update the Exercise metadata.
+     *
+     * @param Exercise  $exercise
      * @param \stdClass $metadata
+     *
      * @throws ValidationException
      */
     public function updateMetadata(Exercise $exercise, \stdClass $metadata)
@@ -257,6 +264,7 @@ class ExerciseManager
      * @todo duration
      *
      * @param Exercise $exercise
+     *
      * @return array
      */
     private function exportMetadata(Exercise $exercise)
@@ -267,11 +275,11 @@ class ExerciseManager
 
         // Accessibility dates
         $startDate = $node->getAccessibleFrom()  ? $node->getAccessibleFrom()->format('Y-m-d H:i:s')  : null;
-        $endDate   = $node->getAccessibleUntil() ? $node->getAccessibleUntil()->format('Y-m-d H:i:s') : null;
+        $endDate = $node->getAccessibleUntil() ? $node->getAccessibleUntil()->format('Y-m-d H:i:s') : null;
 
         return [
             'authors' => [
-                [ 'name' => $authorName ],
+                ['name' => $authorName],
             ],
             'created' => $node->getCreationDate()->format('Y-m-d H:i:s'),
             'title' => $exercise->getTitle(),
@@ -291,15 +299,16 @@ class ExerciseManager
             'startDate' => $startDate,
             'endDate' => $endDate,
             'published' => $node->isPublished(),
-            'publishedOnce' => $exercise->wasPublishedOnce()
+            'publishedOnce' => $exercise->wasPublishedOnce(),
         ];
     }
 
     /**
-     * Export exercise with steps with questions
+     * Export exercise with steps with questions.
      *
-     * @param Exercise  $exercise
-     * @param bool      $withSolutions
+     * @param Exercise $exercise
+     * @param bool     $withSolutions
+     *
      * @return array
      */
     public function exportSteps(Exercise $exercise, $withSolutions = true)
@@ -311,7 +320,7 @@ class ExerciseManager
 
         foreach ($steps as $step) {
             $currentStep = [
-                'id'    => $step->getId(),
+                'id' => $step->getId(),
                 'items' => [],
             ];
 
