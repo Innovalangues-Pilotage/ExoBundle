@@ -39,6 +39,14 @@ class InteractionAudioMarkType extends AbstractType
                         'data-blacklist' => 'file',
                     ),
                 ));
+
+        $builder->add('audioMarks', 'collection', array(
+            'type' => new AudioMarkType(),
+            'allow_add' => true,
+            'allow_delete' => true,
+            'mapped' => true,
+            'by_reference' => false,
+        ));
     }
 
     public function configureOptions(OptionsResolver $resolver)

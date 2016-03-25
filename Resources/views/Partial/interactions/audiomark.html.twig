@@ -3,6 +3,8 @@
     {{ form_errors(form.audioResource) }}
 </div>
 
+<hr/> 
+
 <div class="row">
     <div class="col-md-12">
         <div id="wave-timeline"></div>
@@ -26,10 +28,26 @@
     </div>
 </div>
 
+<div class="row">
+	<div class="col-md-12">
+		<table id="regions" class="table" data-prototype="{{ form_widget(form.audioMarks.vars.prototype)|e }}">
+		{% for i, audioMark in form.audioMarks %}
+			<tr id="" class="region">
+				{{ form_row(audioMark.start) }}
+				{{ form_row(audioMark.end) }}
+			</tr>
+		{% endfor %}
+		
+		</table>
+	</div>
+</div>
+
+
+
+
+
 <script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/wavesurfer.js') }}"></script>
-<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/webaudio.js') }}"></script>
-<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/drawer.js') }}"></script>
-<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/drawer.canvas.js') }}"></script>
 <script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.timeline.js') }}"></script>
 <script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.regions.js') }}"></script>
 <script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.minimap.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ujmexo/js/interactionAudioMark.js') }}"></script>
