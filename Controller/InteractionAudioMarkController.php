@@ -72,20 +72,21 @@ class InteractionAudioMarkController extends Controller
      */
     public function createAction()
     {
+        $request = $this->container->get('request');
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         $em = $this->getDoctrine()->getManager();
         $services = $this->container->get('ujm.exo_InteractionQCM');
+        $catSer = $this->container->get('ujm.exo_category');
+
         $interQCM = new InteractionAudioMark();
         $form = $this->createForm(new InteractionAudioMarkType($user), $interQCM);
-        $request = $this->container->get('request');
 
         $exoID = $request->request->get('exercise');
         $stepID = $request->request->get('step');
 
-        $catSer = $this->container->get('ujm.exo_category');
         $exercise = $em->getRepository('UJMExoBundle:Exercise')->find($exoID);
-
         $step = $em->getRepository('UJMExoBundle:Step')->find($stepID);
+
         $formHandler = new InteractionAudioMarkHandler(
             $form, $this->get('request'), $em,
             $this->container->get('ujm.exo_exercise'), $catSer,

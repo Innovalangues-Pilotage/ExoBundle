@@ -2,6 +2,8 @@
 
 namespace UJM\ExoBundle\Form;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 class InteractionAudioMarkHandler extends QuestionHandler
 {
     /**
@@ -9,8 +11,28 @@ class InteractionAudioMarkHandler extends QuestionHandler
      */
     public function processAdd()
     {
+        $interaction = $this->form->getData();
+
+        $audioMarks = new ArrayCollection();
+        foreach ($interaction->getAudioMarks() as $audioMark) {
+            $audioMarks->add($audioMark);
+        }
+
         if ($this->request->getMethod() == 'POST') {
             $this->form->handleRequest($this->request);
+
+            // remove unused audiomarks
+            foreach ($audioMarks as $audioMark) {
+                if ($interaction->getAudioMarks()->contains($audioMark) === false) {
+                    $em->remove($audioMark);
+                }
+            }
+
+            // link audiomarks to exo
+            foreach ($interaction->getAudioMarks() as $audioMark) {
+                $audioMark->setInteractionAudioMark($interaction);
+            }
+
             //Uses the default category if no category selected
             $this->checkCategory();
             //If title null, uses the first 50 characters of "invite" (enuncicate)
