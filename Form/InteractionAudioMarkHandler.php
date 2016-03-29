@@ -21,18 +21,6 @@ class InteractionAudioMarkHandler extends QuestionHandler
         if ($this->request->getMethod() == 'POST') {
             $this->form->handleRequest($this->request);
 
-            // remove unused audiomarks
-            foreach ($audioMarks as $audioMark) {
-                if ($interaction->getAudioMarks()->contains($audioMark) === false) {
-                    $em->remove($audioMark);
-                }
-            }
-
-            // link audiomarks to exo
-            foreach ($interaction->getAudioMarks() as $audioMark) {
-                $audioMark->setInteractionAudioMark($interaction);
-            }
-
             //Uses the default category if no category selected
             $this->checkCategory();
             //If title null, uses the first 50 characters of "invite" (enuncicate)
@@ -41,7 +29,8 @@ class InteractionAudioMarkHandler extends QuestionHandler
                 return 'infoDuplicateQuestion';
             }
             if ($this->form->isValid()) {
-                $this->onSuccessAdd($this->form->getData());
+                $this->onSuccessAdd($interaction);
+                $this->updateAudioMarks($audioMarks, $interaction);
 
                 return true;
             }
@@ -77,16 +66,21 @@ class InteractionAudioMarkHandler extends QuestionHandler
      * Implements the abstract method.
      *
      *
-     * @param \UJM\ExoBundle\Entity\InteractionOpen $originalInterOpen
+     * @param \UJM\ExoBundle\Entity\InteractionOpen $interaction
      *
      * Return boolean
      */
-    public function processUpdate($originalInterOpen)
+    public function processUpdate($interaction)
     {
         $originalWrs = array();
         $originalHints = array();
 
-        foreach ($originalInterOpen->getQuestion()->getHints() as $hint) {
+        $audioMarks = new ArrayCollection();
+        foreach ($interaction->getAudioMarks() as $audioMark) {
+            $audioMarks->add($audioMark);
+        }
+
+        foreach ($interaction->getQuestion()->getHints() as $hint) {
             $originalHints[] = $hint;
         }
 
@@ -95,6 +89,7 @@ class InteractionAudioMarkHandler extends QuestionHandler
 
             if ($this->form->isValid()) {
                 $this->onSuccessUpdate($this->form->getData(), $originalWrs, $originalHints);
+                $this->updateAudioMarks($audioMarks, $interaction);
 
                 return true;
             }
@@ -119,5 +114,24 @@ class InteractionAudioMarkHandler extends QuestionHandler
         $this->em->persist($interOpen->getQuestion());
 
         $this->em->flush();
+    }
+
+    private function updateAudioMarks($audioMarks, $interaction)
+    {
+        // remove unused audiomarks
+        foreach ($audioMarks as $audioMark) {
+            if ($interaction->getAudioMarks()->contains($audioMark) === false) {
+                $this->em->remove($audioMark);
+            }
+        }
+
+        // link audiomarks to interaction
+        foreach ($interaction->getAudioMarks() as $audioMark) {
+            $audioMark->setInteractionAudioMark($interaction);
+            $this->em->persist($audioMark);
+        }
+        $this->em->flush();
+
+        return;
     }
 }
