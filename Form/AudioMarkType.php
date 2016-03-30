@@ -14,21 +14,27 @@ class AudioMarkType extends AbstractType
             ->add('start', 'number',
                     array(
                         'attr' => array('data-field' => 'start'),
-                        'label' => 'start',
+                        'label' => 'audio_mark_start',
                     )
                 )
             ->add('end', 'number',
                     array(
                         'attr' => array('data-field' => 'end'),
-                        'label' => 'end',
+                        'label' => 'audio_mark_end',
+                    )
+                )
+            ->add('feedback', 'text',
+                    array(
+                        'required' => false,
+                        'attr' => array('data-field' => 'feedback'),
+                        'label' => 'audio_mark_feedback',
                     )
                 )
             ->add(
                 'rightAnswer', 'checkbox',
                 array(
                     'required' => false,
-                    'label' => 'right_answer',
-                    'translation_domain' => 'ujm_exo',
+                    'label' => 'audio_mark_right_answer',
                 )
             );
     }

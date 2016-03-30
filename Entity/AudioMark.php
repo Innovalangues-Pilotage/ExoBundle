@@ -36,16 +36,16 @@ class AudioMark
     private $end;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $feedback;
-
-    /**
      * @var bool
      *
      * @ORM\Column(name="rightAnswer", type="boolean")
      */
     private $rightAnswer;
+
+    /**
+     * @ORM\Column(name="feedback", type="text", nullable=true)
+     */
+    private $feedback;
 
     /**
      * @return int
