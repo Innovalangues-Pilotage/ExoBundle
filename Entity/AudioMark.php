@@ -41,6 +41,13 @@ class AudioMark
     private $feedback;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="rightAnswer", type="boolean")
+     */
+    private $rightAnswer;
+
+    /**
      * @return int
      */
     public function getId()
@@ -110,5 +117,29 @@ class AudioMark
     public function setInteractionAudioMark(InteractionAudioMark $interactionAudioMark)
     {
         $this->interactionAudioMark = $interactionAudioMark;
+    }
+
+    /**
+     * Set rightAnswer.
+     *
+     * @param bool $rightAnswer
+     *
+     * @return AudioMark
+     */
+    public function setRightAnswer($rightAnswer)
+    {
+        $this->rightAnswer = $rightAnswer;
+
+        return $this;
+    }
+
+    /**
+     * Get rightAnswer.
+     *
+     * @return bool
+     */
+    public function isRightAnswer()
+    {
+        return $this->rightAnswer;
     }
 }

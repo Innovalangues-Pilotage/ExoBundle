@@ -13,16 +13,24 @@ class AudioMarkType extends AbstractType
         $builder
             ->add('start', 'number',
                     array(
-                    'attr' => array('data-field' => 'start'),
-                    'label' => 'start',
+                        'attr' => array('data-field' => 'start'),
+                        'label' => 'start',
                     )
                 )
             ->add('end', 'number',
                     array(
-                    'attr' => array('data-field' => 'end'),
-                    'label' => 'end',
+                        'attr' => array('data-field' => 'end'),
+                        'label' => 'end',
                     )
-                );
+                )
+            ->add(
+                'rightAnswer', 'checkbox',
+                array(
+                    'required' => false,
+                    'label' => 'right_answer',
+                    'translation_domain' => 'ujm_exo',
+                )
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
