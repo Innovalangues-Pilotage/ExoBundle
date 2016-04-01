@@ -29,6 +29,10 @@ $(document).ready(function () {
        showRegion(region);
     });
 
+    ws.on('region-out', function(region) {
+       hideRegion(region);
+    });
+
     loadAudio();
 
     
@@ -121,6 +125,8 @@ function addAudioMarkForm(prototype, collection, region){
     var newFormLi = $('<tr id="'+region.id+'" class="region"></tr>').append("<td>" + newForm + "</td>");
     collection.append(newFormLi);
 
+    addRemoveBtn(region.id);
+
     $("#"+region.id + " " + startSelect).val(region.start);
     $("#"+region.id + " " + endSelect).val(region.end);
 }
@@ -131,6 +137,8 @@ function createSavedRegions(){
         var start = $(this).find(startSelect).val();
         var end = $(this).find(endSelect).val();
         var id = "audiomark-" + $(this).attr("data-mark-id");
+
+        addRemoveBtn(id);
 
         var opt = {
             id: id,
@@ -167,8 +175,16 @@ function sortRegion(){
     return;
 }
 
-function showRegion(region)
-{
+function showRegion(region){
     $(".region").css("background-color", "white");
     $("#"+region.id).css("background-color", "#00A1E5");
+}
+
+function hideRegion(region){
+    $("#"+region.id).css("background-color", "white");
+}
+
+function addRemoveBtn(regionId) {
+    var btn = $('<a data-region-id="'+regionId+'" class="btn btn-default btn-xs" onClick="event.preventDefault(); removeRegion(\''+regionId+'\')" href="#"><span class="fa fa-trash"></span> remove</a>');
+    $("#"+regionId).append(btn);
 }
