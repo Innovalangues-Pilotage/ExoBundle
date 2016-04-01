@@ -1,12 +1,13 @@
 var ws;
 var wsOptions = {
     container: '#waveform',
-    waveColor: '#172B32', //#172B32',
     progressColor: '#00A1E5',
     height: 128,
     scrollParent: true,
     normalize: true
 };
+var startSelect = "input[data-field='start']";
+var endSelect = "input[data-field='end']"
 
 $(document).ready(function () {
     ws = Object.create(WaveSurfer);
@@ -18,6 +19,14 @@ $(document).ready(function () {
 
     ws.on('region-created', function(region) {
        createRegion(region);
+    });
+
+    ws.on('region-click', function(region) {
+       showRegion(region);
+    });
+
+    ws.on('region-in', function(region) {
+       showRegion(region);
     });
 
     loadAudio();
@@ -42,7 +51,6 @@ function loadAudio(){
         var audioURL = Routing.generate('claro_file_get_media', {node: nodeId});
         ws.load(audioURL);
             ws.enableDragSelection({
-            color: 'rgba(255, 0, 0, 0.3)'
         });
         ws.on('ready', function () {
             var timeline = Object.create(WaveSurfer.Timeline);
@@ -70,7 +78,7 @@ function removeRegions(all) {
         removeRegion(ws.regions.list[index].id);
     }
 
-    $("#regions").html("");
+    $("#regions tbody").html("");
 
     return;
 }
@@ -86,8 +94,12 @@ function createRegion(region){
 };
 
 function updateRegion(region){
-    $("#"+region.id+" [data-field='start']").val(region.start);
-    $("#"+region.id+" [data-field='end']").val(region.end);
+    $("#"+region.id + " " + startSelect).val(region.start);
+    $("#"+region.id + " " + endSelect).val(region.end);
+
+    sortRegion();
+
+    showRegion(region);
 
     return;
 };
@@ -109,15 +121,15 @@ function addAudioMarkForm(prototype, collection, region){
     var newFormLi = $('<tr id="'+region.id+'" class="region"></tr>').append("<td>" + newForm + "</td>");
     collection.append(newFormLi);
 
-    $("#"+region.id+" [data-field='start']").val(region.start);
-    $("#"+region.id+" [data-field='end']").val(region.end);
+    $("#"+region.id + " " + startSelect).val(region.start);
+    $("#"+region.id + " " + endSelect).val(region.end);
 }
 
 
 function createSavedRegions(){   
     $("#regions .region").each(function( index ) {
-        var start = $(this).find("input[data-field='start']").val();
-        var end = $(this).find("input[data-field='end']").val();
+        var start = $(this).find(startSelect).val();
+        var end = $(this).find(endSelect).val();
         var id = "audiomark-" + $(this).attr("data-mark-id");
 
         var opt = {
@@ -128,4 +140,35 @@ function createSavedRegions(){
 
         ws.addRegion(opt);
     });
+
+    sortRegion();
+}
+
+
+function sortRegion(){
+    var regionsContainer = $("#regions");
+    var regions = regionsContainer.find(".region");
+
+    regions.sort(function(a,b){
+        var astart = Number($(a).find(startSelect).val());
+        var bstart = Number($(b).find(startSelect).val());
+
+        if(astart > bstart) {
+            return 1;
+        }
+        if(astart < bstart) {
+            return -1;
+        }
+        return 0;
+    });
+
+    regions.detach().appendTo(regionsContainer);    
+
+    return;
+}
+
+function showRegion(region)
+{
+    $(".region").css("background-color", "white");
+    $("#"+region.id).css("background-color", "#00A1E5");
 }

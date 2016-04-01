@@ -11,13 +11,13 @@ class AudioMarkType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('start', 'number',
+            ->add('start', 'hidden',
                     array(
                         'attr' => array('data-field' => 'start'),
                         'label' => 'audio_mark_start',
                     )
                 )
-            ->add('end', 'number',
+            ->add('end', 'hidden',
                     array(
                         'attr' => array('data-field' => 'end'),
                         'label' => 'audio_mark_end',

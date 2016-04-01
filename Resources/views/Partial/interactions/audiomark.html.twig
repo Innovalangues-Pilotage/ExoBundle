@@ -31,16 +31,18 @@
 <div class="row">
 	<div class="col-md-12">
 		<table id="regions" class="table" data-prototype="{{ form_widget(form.audioMarks.vars.prototype)|e }}">
-		{% for i, audioMark in form.audioMarks %}
-			<tr id="audiomark-{{ audioMark.vars.value.id }}" data-mark-id="{{ audioMark.vars.value.id }}" class="region">
-                <td>
-                    {{ form_row(audioMark.start) }}
-                    {{ form_row(audioMark.end) }}
-                    {{ form_row(audioMark.feedback) }}
-                    {{ form_row(audioMark.rightAnswer) }}
-                </td>
-			</tr>
-		{% endfor %}
+            <tbody>
+        		{% for i, audioMark in form.audioMarks %}
+        			<tr id="audiomark-{{ audioMark.vars.value.id }}" data-mark-id="{{ audioMark.vars.value.id }}" class="region">
+                        <td>
+                            {{ form_row(audioMark.start) }}
+                            {{ form_row(audioMark.end) }}
+                            {{ form_row(audioMark.feedback) }}
+                            {{ form_row(audioMark.rightAnswer) }}
+                        </td>
+        			</tr>
+        		{% endfor %}
+            </tbody>
 		</table>
 	</div>
 </div>
