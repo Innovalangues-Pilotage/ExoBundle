@@ -36,14 +36,24 @@ class AudioMark
     private $end;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $leftTolerancy = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $rightTolerancy = 0;
+
+    /**
      * @var bool
      *
-     * @ORM\Column(name="rightAnswer", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     private $rightAnswer;
 
     /**
-     * @ORM\Column(name="feedback", type="text", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $feedback;
 
@@ -101,6 +111,38 @@ class AudioMark
     public function getEnd()
     {
         return $this->end;
+    }
+
+    /**
+     * @param string $end
+     */
+    public function setLeftTolerancy($leftTolerancy)
+    {
+        $this->leftTolerancy = $leftTolerancy;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLeftTolerancy()
+    {
+        return $this->leftTolerancy;
+    }
+
+    /**
+     * @param string $end
+     */
+    public function setRightTolerancy($rightTolerancy)
+    {
+        $this->rightTolerancy = $rightTolerancy;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRightTolerancy()
+    {
+        return $this->rightTolerancy;
     }
 
     /**

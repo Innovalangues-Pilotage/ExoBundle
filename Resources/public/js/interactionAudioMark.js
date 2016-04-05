@@ -4,10 +4,15 @@ var wsOptions = {
     progressColor: '#00A1E5',
     height: 128,
     scrollParent: true,
-    normalize: true
+    normalize: true,
+    interact: true
 };
 var startSelect = "input[data-field='start']";
-var endSelect = "input[data-field='end']"
+var endSelect = "input[data-field='end']";
+var leftSelect = "input[data-field='leftTolerancy']";
+var rightSelect = "input[data-field='rightTolerancy']";
+var regionsContainer = $("#regions");
+var audioResource = $('#ujm_exobundle_interactionaudiomarktype_audioResource');
 
 $(document).ready(function () {
     ws = Object.create(WaveSurfer);
@@ -22,34 +27,26 @@ $(document).ready(function () {
     });
 
     ws.on('region-click', function(region) {
-       showRegion(region);
+       highlightRegion(region.id);
     });
 
     ws.on('region-in', function(region) {
-       showRegion(region);
+       highlightRegion(region.id);
     });
 
     ws.on('region-out', function(region) {
        hideRegion(region);
     });
 
-    loadAudio();
+    audioResource.change(function() {
+        loadAudio();
+    });
 
-    
+    loadAudio();
 });
 
-$('#ujm_exobundle_interactionaudiomarktype_audioResource').change(function() {
-    loadAudio();
-})
-
-
-$( "#regions" ).on( "click", ".remove-region", function() {
-    var regionId = $(this).parent().attr("id");
-    removeRegion(regionId);
-});
 
 function loadAudio(){
-    var audioResource = $("#ujm_exobundle_interactionaudiomarktype_audioResource");
     var nodeId = audioResource.val();
     if (nodeId){
         var audioURL = Routing.generate('claro_file_get_media', {node: nodeId});
@@ -62,9 +59,7 @@ function loadAudio(){
                 wavesurfer: ws,
                 container: '#wave-timeline'
             });
-
             createSavedRegions();
-
         }); 
     }
 
@@ -77,42 +72,66 @@ function playPause() {
     return;
 }
 
+function playRegion(regionId){
+    var region = getRegion(regionId);
+    var start = getStart(region);
+    var end = getEnd(region);
+    highlightRegion(regionId);
+    ws.play(start, end);
+
+    return;
+}
+
+function playWithTolerancy(regionId){
+    var region = getRegion(regionId);
+    var start = getStart(region);
+    var end = getEnd(region);
+    var left = getLeft(region);
+    var right = getRight(region);
+    var totalTime = ws.getDuration();
+    highlightRegion(regionId);
+    start = (start - left < 0) ? 0 : start - left;
+    end = (end + right > totalTime) ? totalTime : end + right; 
+
+    ws.play(start, end);
+}
+
 function removeRegions(all) {
     for (var index in ws.regions.list) {
         removeRegion(ws.regions.list[index].id);
     }
-
-    $("#regions tbody").html("");
+    regionsContainer.find("tbody").html("");
 
     return;
 }
 
 function createRegion(region){
-    if ( $( "#"+region.id ).length == 0 ) {
-        var collection = $("#regions");
-        var prototype = collection.attr("data-prototype");
-        addAudioMarkForm(prototype, collection, region);
+    var regionHtml = getRegion(region.id);
+    if (regionHtml.length == 0){
+        var prototype = regionsContainer.attr("data-prototype");
+        addAudioMarkForm(prototype, region);
     }
 
     return;
 };
 
 function updateRegion(region){
-    $("#"+region.id + " " + startSelect).val(region.start);
-    $("#"+region.id + " " + endSelect).val(region.end);
+    var regionHtml = getRegion(region.id);
 
+    setStart(regionHtml, region.start);
+    setEnd(regionHtml, region.end);
     sortRegion();
-
-    showRegion(region);
+    highlightRegion(region.id);
 
     return;
 };
 
 function removeRegion(regionId){
+    var region = getRegion(regionId);
     for (var index in ws.regions.list) {
         if (ws.regions.list[index].id === regionId ) {
             ws.regions.list[index].remove();
-            $("#"+regionId).remove();
+            region.remove();
             break;
         };
     }
@@ -120,25 +139,16 @@ function removeRegion(regionId){
     return;
 }
 
-function addAudioMarkForm(prototype, collection, region){
-    var newForm = prototype.replace(/__name__/g, collection.find(".region").length);
-    var newFormLi = $('<tr id="'+region.id+'" class="region"></tr>').append("<td>" + newForm + "</td>");
-    collection.append(newFormLi);
+function createSavedRegions(){
+    var regions = getRegions();
 
-    addRemoveBtn(region.id);
-
-    $("#"+region.id + " " + startSelect).val(region.start);
-    $("#"+region.id + " " + endSelect).val(region.end);
-}
-
-
-function createSavedRegions(){   
-    $("#regions .region").each(function( index ) {
-        var start = $(this).find(startSelect).val();
-        var end = $(this).find(endSelect).val();
+    regions.each(function( index ) {
+        region = $(this);
+        var start = getStart(region);
+        var end = getEnd(region);
         var id = "audiomark-" + $(this).attr("data-mark-id");
 
-        addRemoveBtn(id);
+        addBtns(id);
 
         var opt = {
             id: id,
@@ -148,18 +158,17 @@ function createSavedRegions(){
 
         ws.addRegion(opt);
     });
-
     sortRegion();
+
+    return;
 }
 
-
 function sortRegion(){
-    var regionsContainer = $("#regions");
-    var regions = regionsContainer.find(".region");
+    var regions = getRegions();
 
     regions.sort(function(a,b){
-        var astart = Number($(a).find(startSelect).val());
-        var bstart = Number($(b).find(startSelect).val());
+        var astart = getStart(a);
+        var bstart = getStart(b);
 
         if(astart > bstart) {
             return 1;
@@ -175,16 +184,91 @@ function sortRegion(){
     return;
 }
 
-function showRegion(region){
-    $(".region").css("background-color", "white");
-    $("#"+region.id).css("background-color", "#00A1E5");
+function highlightRegion(regionId){
+    var regions = getRegions();
+    var region = getRegion(regionId);
+    regions.css("background-color", "white");
+    region.css("background-color", "#00A1E5");
+
+    return;
 }
 
 function hideRegion(region){
-    $("#"+region.id).css("background-color", "white");
+    var regions = getRegions();
+    var region = getRegion(region.id);
+    region.css("background-color", "white");
+
+    return;
 }
 
-function addRemoveBtn(regionId) {
-    var btn = $('<a data-region-id="'+regionId+'" class="btn btn-default btn-xs" onClick="event.preventDefault(); removeRegion(\''+regionId+'\')" href="#"><span class="fa fa-trash"></span> remove</a>');
-    $("#"+regionId).append(btn);
+
+/**************************
+    DOM ELEMENTS GENERATION
+***************************/
+
+function addBtns(regionId){
+    var region = getRegion(regionId);
+    var playBtn = '<a data-region-id="'+regionId+'" class="btn btn-default btn-sm" onClick="event.preventDefault(); playRegion(\''+regionId+'\')" href="#"><span class="fa fa-play"></span> Play</a>';
+    var PlayWithTolerancyBtn = '<a data-region-id="'+regionId+'" class="btn btn-default btn-sm" onClick="event.preventDefault(); playWithTolerancy(\''+regionId+'\')" href="#"><span class="fa fa-play"></span> Play with tolerancy</a>';
+    var removeBtn = '<a data-region-id="'+regionId+'" class="btn btn-default btn-danger btn-sm" onClick="event.preventDefault(); removeRegion(\''+regionId+'\')" href="#"><span class="fa fa-trash"></span> Remove</a>';
+    region.append("<td>"+ playBtn + "&nbsp;" + PlayWithTolerancyBtn + "&nbsp;" + removeBtn + "</td>");
+
+    return;
 }
+
+
+function addAudioMarkForm(prototype, region){
+    var newForm = prototype.replace(/__name__/g, regions.length);
+    var newFormLi = $('<tr id="'+region.id+'" class="region"></tr>').append("<td>" + newForm + "</td>");
+    regionsContainer.append(newFormLi);
+
+    addBtns(region.id);
+
+    var regionHtml = getRegion(region.id);
+    setStart(regionHtml, region.start);
+    setEnd(regionHtml, region.end);
+
+    return;
+}
+
+/**************************
+    UTILS
+***************************/
+
+function getRegion(regionId){
+    return $("#"+regionId);
+}
+
+function getRegions(){
+    return regionsContainer.find(".region");
+}
+
+function getStart(region){
+    return Number($(region).find(startSelect).val());
+}
+
+function getEnd(region){
+    return Number($(region).find(endSelect).val());
+}
+
+function getLeft(region){
+    return Number($(region).find(leftSelect).val() / 1000);
+}
+
+function getRight(region){
+    return Number($(region).find(rightSelect).val() / 1000);
+}
+
+function getEnd(region){
+    return Number($(region).find(endSelect).val());
+}
+
+
+function setStart(region, start){
+    return region.find(startSelect).val(start);
+}
+
+function setEnd(region, end){
+    return region.find(endSelect).val(end)
+}
+

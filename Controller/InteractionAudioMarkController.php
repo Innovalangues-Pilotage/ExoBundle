@@ -25,16 +25,15 @@ class InteractionAudioMarkController extends Controller
         $vars = $attr->get('vars');
 
         $response = new Response();
-        $interactionOpen = $em->getRepository('UJMExoBundle:InteractionOpen')
-            ->findOneByQuestion($attr->get('interaction')->getId());
+        $audioMark = $em->getRepository('UJMExoBundle:InteractionAudioMark')->findOneByQuestion($attr->get('interaction')->getId());
 
         $form = $this->createForm(new ResponseType(), $response);
 
-        $vars['interactionToDisplayed'] = $interactionOpen;
+        $vars['interactionToDisplayed'] = $audioMark;
         $vars['form'] = $form->createView();
         $vars['exoID'] = $attr->get('exoID');
 
-        return $this->render('UJMExoBundle:InteractionOpen:paper.html.twig', $vars);
+        return $this->render('UJMExoBundle:InteractionAudioMark:paper.html.twig', $vars);
     }
 
     /**
@@ -292,6 +291,6 @@ class InteractionAudioMarkController extends Controller
         $vars['tempMark'] = $res['tempMark'];
         $vars['exoID'] = $postVal['exoID'];
 
-        return $this->render('UJMExoBundle:InteractionOpen:openOverview.html.twig', $vars);
+        return $this->render('UJMExoBundle:InteractionAudioMark:openOverview.html.twig', $vars);
     }
 }
