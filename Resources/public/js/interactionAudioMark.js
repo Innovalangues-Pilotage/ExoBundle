@@ -45,12 +45,12 @@ $(document).ready(function () {
         loadAudio();
     });
 
-    regionsContainer.on('change', rightTolSelect , function() {
+    regionsContainer.on('change focus', rightTolSelect , function() {
         var regionId = $(this).parents(".region").attr("id");
         seekToRight(regionId);
     });
 
-    regionsContainer.on('change', leftTolSelect , function() {
+    regionsContainer.on('change focus', leftTolSelect , function() {
         var regionId = $(this).parents(".region").attr("id");
         seekToLeft(regionId);
     });
@@ -113,7 +113,7 @@ function removeRegions(all) {
     for (var index in ws.regions.list) {
         removeRegion(ws.regions.list[index].id);
     }
-    regionsContainer.find("tbody").html("");
+    regionsContainer.html("");
 
     return;
 }
@@ -230,7 +230,7 @@ function seekToLeft(regionId){
     var start = getStart(region);
     var totalTime = ws.getDuration();
     var progress = getStartWithTolerancy(start, left)/ws.getDuration();
-    
+
     ws.seekTo(progress);
 }
 
@@ -243,15 +243,16 @@ function addBtns(regionId){
     var playBtn = '<a data-region-id="'+regionId+'" class="btn btn-default btn-sm" onClick="event.preventDefault(); playRegion(\''+regionId+'\')" href="#"><span class="fa fa-play"></span> Play</a>';
     var PlayWithTolerancyBtn = '<a data-region-id="'+regionId+'" class="btn btn-default btn-sm" onClick="event.preventDefault(); playWithTolerancy(\''+regionId+'\')" href="#"><span class="fa fa-play"></span> Play with tolerancy</a>';
     var removeBtn = '<a data-region-id="'+regionId+'" class="btn btn-default btn-danger btn-sm" onClick="event.preventDefault(); removeRegion(\''+regionId+'\')" href="#"><span class="fa fa-trash"></span> Remove</a>';
-    region.append("<td>"+ playBtn + "&nbsp;" + PlayWithTolerancyBtn + "&nbsp;" + removeBtn + "</td>");
+    region.find(".buttons").append(playBtn + "&nbsp;" + PlayWithTolerancyBtn + "&nbsp;" + removeBtn);
 
     return;
 }
 
 
 function addAudioMarkForm(prototype, region){
+    var regions = getRegions();
     var newForm = prototype.replace(/__name__/g, regions.length);
-    var newFormLi = $('<tr id="'+region.id+'" class="region"></tr>').append("<td>" + newForm + "</td>");
+    var newFormLi = $('<li id="'+region.id+'" class="region list-group-item"></li>').append(newForm);
     regionsContainer.append(newFormLi);
 
     addBtns(region.id);

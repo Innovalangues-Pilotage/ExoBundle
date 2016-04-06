@@ -29,22 +29,13 @@
 
 <div class="row">
 	<div class="col-md-12">
-		<table id="regions" class="table" data-prototype="{{ form_widget(form.audioMarks.vars.prototype)|e }}">
-            <tbody>
-        		{% for i, audioMark in form.audioMarks %}
-        			<tr id="audiomark-{{ audioMark.vars.value.id }}" data-mark-id="{{ audioMark.vars.value.id }}" class="region">
-                        <td>
-                            {{ form_row(audioMark.start) }}
-                            {{ form_row(audioMark.end) }}
-                            {{ form_row(audioMark.feedback) }}
-                            {{ form_row(audioMark.leftTolerancy) }}
-                            {{ form_row(audioMark.rightTolerancy) }}
-                            {{ form_row(audioMark.rightAnswer) }}
-                        </td>
-        			</tr>
-        		{% endfor %}
-            </tbody>
-		</table>
+		<ul id="regions" class="list-group " data-prototype="{{ _self.audiomark_prototype(form.audioMarks.vars.prototype)|e }}">
+    		{% for audioMark in form.audioMarks %}
+                <li id="audiomark-{{ audioMark.vars.value.id }}" data-mark-id="{{ audioMark.vars.value.id }}" class="region list-group-item">
+    			 {{ _self.audiomark_prototype(audioMark) }}
+                </li>
+    		{% endfor %}
+		</ul>
 	</div>
 </div>
 
@@ -53,3 +44,21 @@
 <script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.regions.js') }}"></script>
 <script type="text/javascript" src="{{ asset('bundles/ujmexo/js/libs/wavesurfer/plugins/wavesurfer.minimap.js') }}"></script>
 <script type="text/javascript" src="{{ asset('bundles/ujmexo/js/interactionAudioMark.js') }}"></script>
+
+
+{% macro audiomark_prototype(audioMark) %}
+    <div class="row">
+        <div class="col-md-7">
+            {{ form_row(audioMark.feedback) }}
+            {{ form_row(audioMark.leftTolerancy) }}
+            {{ form_row(audioMark.rightTolerancy) }}
+        </div>
+        <div class="col-md-2">
+            {{ form_row(audioMark.rightAnswer) }}
+            {{ form_row(audioMark.end) }}
+            {{ form_row(audioMark.start) }}
+        </div>
+        <div class="col-md-3 buttons">
+        </div>
+    </div>
+{% endmacro %}
