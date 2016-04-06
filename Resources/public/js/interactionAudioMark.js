@@ -13,6 +13,9 @@ var leftSelect = "input[data-field='leftTolerancy']";
 var rightSelect = "input[data-field='rightTolerancy']";
 var regionsContainer = $("#regions");
 var audioResource = $('#ujm_exobundle_interactionaudiomarktype_audioResource');
+var rightTolSelect = "input[data-field='rightTolerancy']";
+var leftTolSelect = "input[data-field='leftTolerancy']";
+
 
 $(document).ready(function () {
     ws = Object.create(WaveSurfer);
@@ -40,6 +43,16 @@ $(document).ready(function () {
 
     audioResource.change(function() {
         loadAudio();
+    });
+
+    regionsContainer.on('change', rightTolSelect , function() {
+        var regionId = $(this).parents(".region").attr("id");
+        seekToRight(regionId);
+    });
+
+    regionsContainer.on('change', leftTolSelect , function() {
+        var regionId = $(this).parents(".region").attr("id");
+        seekToLeft(regionId);
     });
 
     loadAudio();
@@ -201,6 +214,25 @@ function hideRegion(region){
     return;
 }
 
+function seekToRight(regionId){
+    var region = getRegion(regionId);
+    var right = getRight(region);
+    var end = getEnd(region);
+    var totalTime = ws.getDuration();
+    var progress = getEndWithTolerancy(end, right, totalTime)/totalTime;
+
+    ws.seekTo(progress);
+}
+
+function seekToLeft(regionId){
+    var region = getRegion(regionId);
+    var left = getLeft(region);
+    var start = getStart(region);
+    var totalTime = ws.getDuration();
+    var progress = getStartWithTolerancy(start, left)/ws.getDuration();
+    
+    ws.seekTo(progress);
+}
 
 /**************************
     DOM ELEMENTS GENERATION
@@ -272,3 +304,10 @@ function setEnd(region, end){
     return region.find(endSelect).val(end)
 }
 
+function getStartWithTolerancy(start, left){
+    return (start - left < 0) ? 0 : start - left;
+}
+
+function getEndWithTolerancy(end, right, totalTime){
+    return (end + right > totalTime) ? totalTime : end + right; 
+}
