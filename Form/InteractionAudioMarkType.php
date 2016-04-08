@@ -34,10 +34,14 @@ class InteractionAudioMarkType extends AbstractType
                 'audioResource',
                 'resourcePicker',
                 array(
-                    'required' => false,
+                    'required' => true,
                     'attr' => array(
-                        'data-blacklist' => 'file',
+                        'data-is-picker-multi-select-allowed' => 0,
+                        'data-is-directory-selection-allowed' => 0,
+                        'data-type-white-list' => 'file',
                     ),
+                    'display_browse_button' => true,
+                    'display_view_button' => false,
                 ));
 
         $builder->add('audioMarks', 'collection', array(

@@ -77,8 +77,8 @@ class InteractionAudioMarkController extends Controller
         $services = $this->container->get('ujm.exo_InteractionQCM');
         $catSer = $this->container->get('ujm.exo_category');
 
-        $interQCM = new InteractionAudioMark();
-        $form = $this->createForm(new InteractionAudioMarkType($user), $interQCM);
+        $interactionAudioMark = new InteractionAudioMark();
+        $form = $this->createForm(new InteractionAudioMarkType($user), $interactionAudioMark);
 
         $exoID = $request->request->get('exercise');
         $stepID = $request->request->get('step');
@@ -96,8 +96,8 @@ class InteractionAudioMarkController extends Controller
         $qcmHandler = $formHandler->processAdd();
 
         if ($qcmHandler === true) {
-            $cat = $interQCM->getQuestion()->getCategory();
-            $title = $interQCM->getQuestion()->getTitle();
+            $cat = $interactionAudioMark->getQuestion()->getCategory();
+            $title = $interactionAudioMark->getQuestion()->getTitle();
 
             $url = ($exoID == -1)
                 ? $this->generateUrl('ujm_question_index', array('categoryToFind' => base64_encode($cat), 'titleToFind' => base64_encode($title)))
@@ -115,7 +115,7 @@ class InteractionAudioMarkController extends Controller
         $typeQCM = $services->getTypeQCM();
         $formWithError = $this->render(
             'UJMExoBundle:InteractionQCM:new.html.twig', array(
-                'entity' => $interQCM,
+                'entity' => $interactionAudioMark,
                 'form' => $form->createView(),
                 'error' => true,
                 'exoID' => $exoID,
@@ -159,11 +159,6 @@ class InteractionAudioMarkController extends Controller
         $editForm = $this->createForm(
             new InteractionAudioMarkType($user, $catId), $audioMark
         );
-
-        if ($exoId != -1) {
-            $exercise = $em->getRepository('UJMExoBundle:Exercise')->find($exoId);
-            $variables['_resource'] = $exercise;
-        }
 
         $typeOpen = $audioMarkService->getTypeOpen();
         $linkedCategory = $catService->getLinkedCategories();
@@ -237,7 +232,7 @@ class InteractionAudioMarkController extends Controller
     }
 
     /**
-     * Deletes a InteractionOpen entity.
+     * Deletes a InteractionAudioMark entity.
      *
      *
      * @param int    $id      id of InteractionOpen
@@ -248,17 +243,18 @@ class InteractionAudioMarkController extends Controller
     public function deleteAction($id, $pageNow)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('UJMExoBundle:InteractionOpen')->find($id);
+
+        if (!$audioMark = $em->getRepository('UJMExoBundle:InteractionAudioMark')->find($id)) {
+            throw $this->createNotFoundException('Unable to find InteractionAudioMark entity.');
+        }
+
         //Deleting of relations, if there the question is shared
-        $sharesQuestion = $em->getRepository('UJMExoBundle:Share')->findBy(array('question' => $entity->getQuestion()->getId()));
+        $sharesQuestion = $em->getRepository('UJMExoBundle:Share')->findBy(array('question' => $audioMark->getQuestion()->getId()));
         foreach ($sharesQuestion as $share) {
             $em->remove($share);
         }
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find InteractionOpen entity.');
-        }
 
-        $em->remove($entity);
+        $em->remove($audioMark);
         $em->flush();
 
         return $this->redirect($this->generateUrl('ujm_question_index', array('pageNow' => $pageNow)));
