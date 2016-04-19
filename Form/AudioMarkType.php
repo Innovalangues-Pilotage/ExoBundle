@@ -33,7 +33,7 @@ class AudioMarkType extends AbstractType
             ->add('leftTolerancy', 'integer',
                     array(
                         'required' => false,
-                        'attr' => array('data-field' => 'leftTolerancy', 'class' => 'input-sm'),
+                        'attr' => array('data-field' => 'leftTolerancy', 'class' => 'input-sm', 'step' => '100'),
                         'label' => 'audio_mark_leftTolerancy',
                         'empty_data' => 0,
                     )
@@ -41,7 +41,7 @@ class AudioMarkType extends AbstractType
             ->add('rightTolerancy', 'integer',
                     array(
                         'required' => false,
-                        'attr' => array('data-field' => 'rightTolerancy', 'class' => 'input-sm'),
+                        'attr' => array('data-field' => 'rightTolerancy', 'class' => 'input-sm', 'step' => '100'),
                         'label' => 'audio_mark_rightTolerancy',
                         'empty_data' => 0,
                     )
