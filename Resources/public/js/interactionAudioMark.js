@@ -11,6 +11,7 @@ var startSelect = "input[data-field='start']";
 var endSelect = "input[data-field='end']";
 var leftSelect = "input[data-field='leftTolerancy']";
 var rightSelect = "input[data-field='rightTolerancy']";
+var internSelect = "input[data-field='internTolerancy']";
 var regionsContainer = $("#regions");
 var audioResource = $('#ujm_exobundle_interactionaudiomarktype_audioResource');
 var rightTolSelect = "input[data-field='rightTolerancy']";
@@ -256,10 +257,10 @@ function addAudioMarkForm(prototype, region){
     regionsContainer.append(newFormLi);
 
     addBtns(region.id);
-
     var regionHtml = getRegion(region.id);
     setStart(regionHtml, region.start);
     setEnd(regionHtml, region.end);
+    setDefault(regionHtml);
 
     return;
 }
@@ -303,6 +304,12 @@ function setStart(region, start){
 
 function setEnd(region, end){
     return region.find(endSelect).val(end)
+}
+
+function setDefault(region){
+    region.find(leftSelect).val(0);
+    region.find(rightSelect).val(0);
+    region.find(internSelect).val(60);
 }
 
 function getStartWithTolerancy(start, left){

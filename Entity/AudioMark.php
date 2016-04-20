@@ -46,6 +46,11 @@ class AudioMark
     private $rightTolerancy = 0;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $internTolerancy = 60;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean")
@@ -143,6 +148,22 @@ class AudioMark
     public function getRightTolerancy()
     {
         return $this->rightTolerancy;
+    }
+
+    /**
+     * @param string $end
+     */
+    public function setInternTolerancy($internTolerancy)
+    {
+        $this->internTolerancy = $internTolerancy;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInternTolerancy()
+    {
+        return (!$this->internTolerancy) ? 60 : $this->internTolerancy;
     }
 
     /**
