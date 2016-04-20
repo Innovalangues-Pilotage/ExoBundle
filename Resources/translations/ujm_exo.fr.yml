@@ -31,6 +31,7 @@ audio_mark_feedback: Feedback
 audio_mark_right_answer: Bonne réponse
 audio_mark_leftTolerancy: Tolérance gauche (en ms)
 audio_mark_rightTolerancy: Tolérance droite (en ms)
+audio_mark_internTolerancy: Tolérance interne
 availability_of_correction: Disponibilité de la correction
 availability_of_score: Disponibilité de la note
 
