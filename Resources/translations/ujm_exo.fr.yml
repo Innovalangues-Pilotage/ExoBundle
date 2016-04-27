@@ -27,11 +27,11 @@ attempt_info5: afin d'améliorer votre note
 attempt_info6: Il ne vous reste plus aucun essai
 at_the_end_of_assessment: A la fin du test
 at_the_same_time_that_the_correction: En même temps que la correction
-audio_mark_feedback: Feedback 
+audio_mark_feedback: Feedback
 audio_mark_right_answer: Bonne réponse
 audio_mark_leftTolerancy: Tolérance gauche (en ms)
 audio_mark_rightTolerancy: Tolérance droite (en ms)
-audio_mark_internTolerancy: Tolérance interne
+audio_mark_internTolerancy: Tolérance interne (en %)
 availability_of_correction: Disponibilité de la correction
 availability_of_score: Disponibilité de la note
 

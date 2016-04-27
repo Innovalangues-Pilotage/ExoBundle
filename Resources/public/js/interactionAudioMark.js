@@ -7,6 +7,8 @@ var wsOptions = {
     normalize: true,
     interact: true
 };
+
+var feedbackSelect = "input[data-field='feedback']";
 var startSelect = "input[data-field='start']";
 var endSelect = "input[data-field='end']";
 var leftSelect = "input[data-field='leftTolerancy']";
@@ -14,9 +16,6 @@ var rightSelect = "input[data-field='rightTolerancy']";
 var internSelect = "input[data-field='internTolerancy']";
 var regionsContainer = $("#regions");
 var audioResource = $('#ujm_exobundle_interactionaudiomarktype_audioResource');
-var rightTolSelect = "input[data-field='rightTolerancy']";
-var leftTolSelect = "input[data-field='leftTolerancy']";
-
 
 $(document).ready(function () {
     ws = Object.create(WaveSurfer);
@@ -46,14 +45,21 @@ $(document).ready(function () {
         loadAudio();
     });
 
-    regionsContainer.on('change focus', rightTolSelect , function() {
+    regionsContainer.on('change focus', feedbackSelect + "," + internSelect , function() {
         var regionId = $(this).parents(".region").attr("id");
-        seekToRight(regionId);
+        highlightRegion(regionId);
     });
 
-    regionsContainer.on('change focus', leftTolSelect , function() {
+    regionsContainer.on('change focus', rightSelect , function() {
+        var regionId = $(this).parents(".region").attr("id");
+        seekToRight(regionId);
+        highlightRegion(regionId);
+    });
+
+    regionsContainer.on('change focus', leftSelect , function() {
         var regionId = $(this).parents(".region").attr("id");
         seekToLeft(regionId);
+        highlightRegion(regionId);
     });
 
     loadAudio();
@@ -74,7 +80,7 @@ function loadAudio(){
                 container: '#wave-timeline'
             });
             createSavedRegions();
-        }); 
+        });
     }
 
     return;
@@ -105,7 +111,7 @@ function playWithTolerancy(regionId){
     var totalTime = ws.getDuration();
     highlightRegion(regionId);
     start = (start - left < 0) ? 0 : start - left;
-    end = (end + right > totalTime) ? totalTime : end + right; 
+    end = (end + right > totalTime) ? totalTime : end + right;
 
     ws.play(start, end);
 }
@@ -167,7 +173,7 @@ function createSavedRegions(){
         var opt = {
             id: id,
             start: start,
-            end: end 
+            end: end
         };
 
         ws.addRegion(opt);
@@ -193,7 +199,7 @@ function sortRegion(){
         return 0;
     });
 
-    regions.detach().appendTo(regionsContainer);    
+    regions.detach().appendTo(regionsContainer);
 
     return;
 }
@@ -317,5 +323,5 @@ function getStartWithTolerancy(start, left){
 }
 
 function getEndWithTolerancy(end, right, totalTime){
-    return (end + right > totalTime) ? totalTime : end + right; 
+    return (end + right > totalTime) ? totalTime : end + right;
 }
